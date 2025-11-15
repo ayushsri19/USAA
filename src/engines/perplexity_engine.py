@@ -1,35 +1,34 @@
 import os
 import requests
-from dotenv import load_dotenv
-
-load_dotenv()
 
 class PerplexityEngine:
     """
-    WORKING FOR YOUR ACCOUNT:
-    Uses 'r1' model (universal for Perplexity personal + pro).
+    SAFE-MODE enabled — missing key = engine disabled (no error)
     """
 
     def __init__(self):
-        self.api_key = os.getenv("PERPLEXITY_API_KEY")
-        if not self.api_key:
-            raise ValueError("PPLX_API_KEY missing in .env!")
+        self.api_key = os.getenv("PERPLEXITY_API_KEY") or os.getenv("PPLX_API_KEY")
 
-        self.model = "r1"   # FINAL, GUARANTEED MODEL
+        if not self.api_key:
+            self.enabled = False
+            return
+
+        self.enabled = True
+        self.model = "r1"
 
     def generate(self, prompt: str) -> str:
+        if not self.enabled:
+            return "(Perplexity disabled: no API key)"
+
         try:
             url = "https://api.perplexity.ai/chat/completions"
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
                 "Content-Type": "application/json"
             }
-
             body = {
                 "model": self.model,
-                "messages": [
-                    {"role": "user", "content": prompt}
-                ]
+                "messages": [{"role": "user", "content": prompt}]
             }
 
             resp = requests.post(url, headers=headers, json=body)
