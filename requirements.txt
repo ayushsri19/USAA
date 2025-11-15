@@ -1,3 +1,4 @@
 # minimal for now; add google-generativeai, openai etc. when enabling real APIs
 requests>=2.28
 python-dotenv>=1.0
+google-generativeai
